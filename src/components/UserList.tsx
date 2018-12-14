@@ -7,15 +7,22 @@ export interface User {
   id?: string;
 }
 
-interface UserListProps {
-  users: User[];
+
+export interface UserListUpdateCallback {
+  (updatedList: User[]): void;
 }
 
-interface UserListState extends UserListProps {
+interface UserListProps {
+  users: User[];
+  onUserListUpdate?: UserListUpdateCallback;
+}
+
+interface UserListState {
+  users: User[];
   counter: number;
 }
 
-export class UserList extends React.Component<UserListProps, UserListState> {
+export class UserList extends React.PureComponent<UserListProps, UserListState> {
   constructor(prop) {
     super(prop);
     this.state = {...prop, counter: 0};
@@ -34,7 +41,20 @@ export class UserList extends React.Component<UserListProps, UserListState> {
   addUserToBeginningOfList() {
     this.setState(state => {
       const newId = state.counter + 1;
-      return {...state, users: [{firstName: `Uj ${newId}`, id: `id_new${newId}`}, ...state.users], counter: newId};
+      const newUser: User = {firstName: `Uj ${newId}`, id: `id_new${newId}`};
+      const newUserList = [newUser, ...state.users];
+      this.notifyAboutUserListChange(newUserList);
+      return {...state, users: newUserList, counter: newId};
     });
   }
+
+  private notifyAboutUserListChange(newUserList: User[]) {
+    if (this.props.onUserListUpdate) {
+      this.props.onUserListUpdate(newUserList);
+    }
+  }
+
+  // shouldComponentUpdate(nextProps: UserListProps, nextState: UserListState) {
+  //   return this.props.users !== nextProps.users;
+  // }
 }
