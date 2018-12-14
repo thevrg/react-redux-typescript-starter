@@ -13,7 +13,7 @@ export default class App extends React.Component<AppProps, undefined> {
       <div className="App">
         <header className="App-header">
           <img src={reactLogo} className="App-logo" alt="logo"/>
-          <Counter/>
+          <Counter value={3 + 2} title="My Counter"/>
         </header>
       </div>
     );
